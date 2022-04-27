@@ -596,7 +596,7 @@ def muestra_ventana():
 		ventana_principal_min_ancho-20), height='100')
 	marco_url_bajar = tk.Frame(marco_bajar, width=str(
 		ventana_principal_min_ancho-100), height='100')
-	label_url_bajar = tk.Label(marco_url_bajar, text='URL:', width=5)
+	label_url_bajar = tk.Label(marco_url_bajar, text='URL o TITULO (Aprox.):', width=5)
 	entry_url_bajar = tk.Entry(marco_url_bajar, width=str(
 		int(ventana_principal_min_ancho/9)))
 	menu_rmb_entry_url_bajar = tk.Menu(entry_url_bajar, tearoff=0)
