@@ -17,6 +17,8 @@
 
 #   Contacto : toccicristian@hotmail.com / toccicristian@protonmail.ch
 
+# TODO : chequear que en windows busque el 7-zip en os.environ['PROGRAMFILES']
+
 licencias = dict()
 licencias['gplv3'] = """    pitsydownloader.py  Copyright (C) 2022  Cristian Tocci
 	This program comes with ABSOLUTELY NO WARRANTY; for details press 'w'.
@@ -87,6 +89,8 @@ import platform
 import time
 import sys
 import os
+import shutil
+import distro
 import requests
 import ffmpeg
 import yt_dlp
@@ -95,6 +99,7 @@ ancho_barra_progresion = 550
 default_dir = '~'
 url_ffmpeg_git_essentials='https://www.gyan.dev/ffmpeg/builds/ffmpeg-git-essentials.7z'
 url_7z_installer='https://www.7-zip.org/a/7z2107-x64.exe'
+url_ffmpeg_static_linux='https://johnvansickle.com/ffmpeg/builds/ffmpeg-git-amd64-static.tar.xz'
 
 
 class FormatoVideo:
@@ -146,7 +151,7 @@ class FormatoVideo:
 
 continuar = False
 def descarga_archivo(label_info,barra_p,url_origen=str(),url_destino=str(),nombre_descarga=str()):
-	global continuar 
+	global continuar
 	continuar = True
 	chunksz = 1024*4
 	url_destino=os.path.expanduser(os.path.normpath(url_destino))
@@ -176,16 +181,22 @@ def descarga_archivo(label_info,barra_p,url_origen=str(),url_destino=str(),nombr
 			barra_p.step(100)
 			label_info.config(text='Descarga finalizada')
 	return True
-	
-	
+
+
 def chequeo_inicial():
 	if str(platform.system()) == 'Windows':
 		if not (os.path.isfile('ffmpeg.exe') and os.path.isfile('ffprobe.exe')):
 			ventana_setup()
 		if not (os.path.isfile('ffmpeg.exe') and os.path.isfile('ffprobe.exe')):
-			print('saliendo...')
+			print('No se pudo obtener ffmpeg.exe o ffprobe.exe')
 			sys.exit(0)
-		
+	if str(platform.system()) == 'Linux':
+		if not shutil.which('ffmpeg'):
+			ventana_setup()
+		if not shutil.which('ffmpeg'):
+			print('No se pudo obtener o instalar el paquete ffmpeg')
+			sys.exit(0)
+
 
 def comando_boton_iniciar (v,boton,label_info,barra_p):
 	boton.configure(text='CANCELAR',command=lambda :cancelar_descarga())
@@ -195,10 +206,10 @@ def comando_boton_iniciar (v,boton,label_info,barra_p):
 
 def setup_inicial(v,label_info,barra_p):
 	recursos_dir = './recursos'
-	programfiles_var=os.environ['PROGRAMW6432']
+	recursos_dir=os.path.expanduser(os.path.normpath(recursos_dir))
 	if str(platform.system()) == 'Windows':
+		programfiles_var=os.environ['PROGRAMW6432']
 		if not (os.path.isfile('ffmpeg.exe') and os.path.isfile('ffprobe.exe')):
-			recursos_dir=os.path.expanduser(os.path.normpath(recursos_dir))
 			exe7z=os.path.join(os.path.join(programfiles_var,'7-Zip'),'7z.exe')
 			if not os.path.isdir(recursos_dir):
 					os.makedirs(recursos_dir,exist_ok=True)
@@ -215,10 +226,40 @@ def setup_inicial(v,label_info,barra_p):
 			label_info.config(text='Extrayendo encoder...')
 			com_extraer_ffmpeg='\"'+exe7z+'\"'+' e -y '+os.path.join(recursos_dir,'ffmpeg_git_essentials.7z')+' *.exe -r'
 			os.system(com_extraer_ffmpeg)
-		print('llego a return true')
 		v.destroy()
 		return True
-		
+	if str(platform.system()) == 'Linux':
+		if not shutil.which('ffmpeg'):
+			url_ffmpeg_linux={
+			'trusty'  : 'http://launchpadlibrarian.net/153479180/ffmpeg_0.8.7-1ubuntu2_amd64.deb',
+			'xenial'  : 'http://launchpadlibrarian.net/489338525/ffmpeg_2.8.17-0ubuntu0.1_amd64.deb',
+			'bionic'  : 'http://launchpadlibrarian.net/489641527/ffmpeg_3.4.8-0ubuntu0.2_amd64.deb',
+			'focal'   : 'http://launchpadlibrarian.net/489340659/ffmpeg_4.2.4-1ubuntu0.1_amd64.deb',
+			'hirsute' : 'http://launchpadlibrarian.net/524395138/ffmpeg_4.3.2-0+deb11u1ubuntu1_amd64.deb',
+			'impish'  : 'http://launchpadlibrarian.net/559380332/ffmpeg_4.4-6ubuntu5_amd64.deb',
+			'jammy'   : 'http://launchpadlibrarian.net/590399276/ffmpeg_4.4.1-3ubuntu5_amd64.deb'
+			}
+			if not os.path.isdir(recursos_dir):
+				os.makedirs(recursos_dir,exist_ok=True)
+			if not((distro.os_release_info()['name'] == 'Ubuntu') and
+					(distro.os_release_info()['version_codename'] in url_ffmpeg_linux)):
+				print('version de OS no soportada')
+				v.destroy()
+				return True
+			rel=distro.os_release_info()['version_codename']
+			deb_nombre='ffmpeg_'+url_ffmpeg_linux[rel].split('ffmpeg_')[1]
+			if not (descarga_archivo(label_info,barra_p,url_ffmpeg_linux[rel],
+					os.path.join(recursos_dir,deb_nombre),'encoder FFMPEG')):
+				print('inicializacion cancelada')
+				v.destroy()
+				return True
+			label_info.config(text='Instalando encoder FFMPEG')
+			com=['qapt-deb-installer',join(recursos_dir,deb_nombre)]
+			subprocess.Popen(com, shell=True, stdout=subprocess.PIPE,
+							stderr=subprocess.STDOUT, universal_newlines=True)
+		v.destroy()
+		return True
+
 
 def get_formatos(video):
 	formatos = list()
@@ -499,16 +540,16 @@ def ventana_setup():
 	v.title('Configuracion inicial')
 	v.geometry(str(v_min_w)+'x'+str(v_min_h))
 	v.resizable(width=False,height=False)
-	label_info=tk.Label(v,text='Primero necesitaremos descargar unos encoders. Pulse <INICIAR>')
+	label_info=tk.Label(v,text='Primero necesitaremos descargar 7z y ffmpeg. Pulse <INICIAR>')
 	barra_p = ttk.Progressbar(v, length=280, mode='determinate')
 	boton_iniciar = tk.Button(text='<INICIAR>',
 		command= lambda : comando_boton_iniciar(v,boton_iniciar,label_info,barra_p))
-	
+
 	label_info.pack(side=tk.TOP,pady=(5,0))
 	barra_p.pack(side=tk.TOP,pady=(15,0))
 	boton_iniciar.pack(side=tk.TOP,pady=(15,0))
 	v.mainloop()
-	
+
 
 
 def show_w(ventana_principal, textow):
