@@ -99,7 +99,6 @@ ancho_barra_progresion = 550
 default_dir = '~'
 url_ffmpeg_git_essentials='https://www.gyan.dev/ffmpeg/builds/ffmpeg-git-essentials.7z'
 url_7z_installer='https://www.7-zip.org/a/7z2107-x64.exe'
-url_ffmpeg_static_linux='https://johnvansickle.com/ffmpeg/builds/ffmpeg-git-amd64-static.tar.xz'
 
 
 class FormatoVideo:
@@ -275,7 +274,10 @@ def get_formatos(video):
 def get_videos(url):
 	ytdl = yt_dlp.YoutubeDL({'outtmpl': '%(id)s.%(ext)s'})
 	with ytdl:
-		resultado = ytdl.extract_info(url, download=False)
+		busq=url
+		if not url.startswith('https://www.youtube.com/watch?v='):
+			busq='ytsearch:{'+busq+'}'
+		resultado = ytdl.extract_info((busq), download=False)
 	v = list()
 	if 'entries' not in resultado:
 		v.append(resultado)
@@ -499,8 +501,8 @@ def obtiene_lista_videos(entry_url, label_estado_descarga):
 
 def gestion_de_bajada(convertir_opcion_seleccionada, entry_url, entry_destino,
 					  barra_progresion, progresion_info, label_estado_descarga, soloaudio=False, convertir=False):
-	if not entry_url.get().startswith('https://www.youtube.com/watch?v='):
-		return None
+	#if not entry_url.get().startswith('https://www.youtube.com/watch?v='):
+	#	return None
 	lista_videos = obtiene_lista_videos(entry_url, label_estado_descarga)
 	if lista_videos is None:
 		return None
@@ -594,7 +596,7 @@ def muestra_ventana():
 		ventana_principal_min_ancho-20), height='100')
 	marco_url_bajar = tk.Frame(marco_bajar, width=str(
 		ventana_principal_min_ancho-100), height='100')
-	label_url_bajar = tk.Label(marco_url_bajar, text='URL:', width=5)
+	label_url_bajar = tk.Label(marco_url_bajar, text='URL o TITULO (Aprox.):', width=5)
 	entry_url_bajar = tk.Entry(marco_url_bajar, width=str(
 		int(ventana_principal_min_ancho/9)))
 	menu_rmb_entry_url_bajar = tk.Menu(entry_url_bajar, tearoff=0)
