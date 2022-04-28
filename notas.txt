@@ -1,0 +1,30 @@
+Cambios de la versión 0.03a:
+	- Se implementaron estas notas
+	- Se añadió un menu contextual (boton derecho del mouse) en la caja de entrada de url,
+	para copiar o cortar el texto seleccionado o pegar texto;
+	- Se corrigió un bug en cual la barra de descarga se completaba antes de completar la descarga
+	y luego volvia a comenzar a completarse un poco más;
+
+Cambios de la versión 0.04a:
+	- No permite intentar descargas de direcciones que no comiencen con 'https://www.youtube.com/watch?v='
+	- Corregido bug de la versión anterior por el cual <Return> no iniciaba la descarga
+	
+cambios de la versión 0.05a:
+	-Se corrigió un bug en el cual la barra de descarga despues de finalizar la descarga se vaciaba por la mitad;
+	-Se agregó la función de pegar url con la rueda del mouse;
+	-Se implementó un nuevo fork de youtube_dl (yt_dlp) que tiene mejoras de velocidad de descarga;
+	-Se implementó la identificación de User-Agent en la descarga para una notable mejora en la velocidad de descarga de videos;
+	(no se observa mejoras en la descarga de los audios)
+
+cambios de la versión 0.0.1-alpha.6:
+	-se cambió la nomenclatura del programa a una mas estandarizada
+	-Se añadió un inicializador que se asegura que tanto windows como ubuntu linux tengan ffmpeg y ffprobe 
+		(sino lo descarga e instala previa autorizacion del usuario)
+	-Se corrigió un bug en el cual al iniciar una descarga luego de cancelar una anterior, 
+	la barra de descarga continua desde donde quedó.
+	-Se añadió la posibilidad de convertir los videos descargados a audio ogg/mp4/mp3
+	-Se sanitizan los nombres de archivo a generar que tienen algunos caracteres no validos (como '/','\','=','&')
+	***BUGS CONOCIDOS Y FIX: En WINDOWS la version '.pyw' O '--noconsole' no convierte los archivos. 
+				Fix: compilar a partir del '.py' y evitar '--noconsole' al hacerlo.
+
+	
