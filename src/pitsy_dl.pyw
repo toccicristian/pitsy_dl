@@ -428,7 +428,12 @@ def bajar_video(video, formato, entry_destino, barra_progresion, progresion_info
 	global continuar
 	continuar = True
 	chunksz = 1024*4
-	destino_url = os.path.join(entry_destino.get(), video['title']+'-'
+	titulo_video=''
+	for caracter in video['title']:
+		if caracter in ['&','/','\\','-','=',' ','?']:
+			caracter = '_'
+		titulo_video+=caracter
+	destino_url = os.path.join(entry_destino.get(), titulo_video+'-'
 							+ formato.get_formato().replace(' ', '-').replace('(', '-').rstrip(')')+'.'+formato.get_ext())
 	with open(destino_url, 'wb') as ar_destino:
 		agent = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.159 Safari/537.36',
@@ -440,7 +445,7 @@ def bajar_video(video, formato, entry_destino, barra_progresion, progresion_info
 		else:
 			barra_progresion['value'] = 0
 			label_estado_descarga.config(
-				text='Descargando :'+acorta_texto(str(video['title']), 40))
+				text='Descargando :'+acorta_texto(str(video['title']), 39))
 			dl = 0
 			tam_total = int(tam_total)
 			tam_totalmb = round(tam_total/1024/1024, 2)
@@ -595,7 +600,7 @@ def muestra_ventana():
 		ventana_principal_min_ancho-20), height='100')
 	marco_url_bajar = tk.Frame(marco_bajar, width=str(
 		ventana_principal_min_ancho-100), height='100')
-	label_url_bajar = tk.Label(marco_url_bajar, text='URL o TITULO (Aprox.):', width=5)
+	label_url_bajar = tk.Label(marco_url_bajar, text='URL o TITULO (Aprox.):', width=23)
 	entry_url_bajar = tk.Entry(marco_url_bajar, width=str(
 		int(ventana_principal_min_ancho/9)))
 	menu_rmb_entry_url_bajar = tk.Menu(entry_url_bajar, tearoff=0)
@@ -637,7 +642,7 @@ def muestra_ventana():
 	marco_barra_progresion_barra = tk.Frame(
 		marco_barra_progresion, width=str(ventana_principal_min_ancho-100))
 	label_estado_descarga = tk.Label(
-		marco_barra_progresion_barra, width='50', text='-')
+		marco_barra_progresion_barra, width='60', text='-')
 	barra_progresion = ttk.Progressbar(
 		marco_barra_progresion_barra, length=ancho_barra_progresion, mode='determinate')
 	marco_barra_progresion_info = tk.Frame(
@@ -681,7 +686,7 @@ def muestra_ventana():
 
 	marco_opciones.pack(side='top', fill='x')
 	marco_casillas.pack(side='left', anchor=tk.W)
-	soloaudio_checkbox.pack(side='left', padx=(5, 5), anchor=tk.W)
+	# soloaudio_checkbox.pack(side='left', padx=(5, 5), anchor=tk.W)
 	convertir_checkbox.pack(side='left', padx=(5, 5), anchor=tk.W)
 	convertir_dropdown.pack(side='left', padx=(5, 5), anchor=tk.W)
 	marco_boton_cancelar.pack(side='right')
