@@ -392,19 +392,20 @@ def convertir_medio(barra_progresion, progresion_info, label_estado_descarga, ur
 	continuar = True
 	duracion = ''
 	duracion = obtiene_duracion_medio(url_in)
-	url_in = os.path.expanduser(os.path.normpath(url_in))
-	url_out = os.path.expanduser(os.path.normpath(url_out))
-	com=['ffmpeg','-i',url_in]
-	if url_out.endswith(('.mp3','.ogg')) or (soloaudio and url_out.endswith('.mp4')):
-		com.append('-vn')
-	if url_out.endswith('.ogg'):
-		com.append('-acodec')
-		com.append('libvorbis')
-	com.append('-y')
-	com.append(url_out)
+	url_in = '\"'+os.path.expanduser(os.path.normpath(url_in))+'\"'
+	url_out = '\"'+os.path.expanduser(os.path.normpath(url_out))+'\"'
+	com='ffmpeg -i '+url_in+' '
+	if url_out.rstrip('\"').endswith(('.mp3','.ogg')) or (soloaudio and url_out.endswith('.mp4')):
+		com+='-vn '
+	if url_out.rstrip('\"').endswith('.ogg'):
+		com+='-acodec '
+		com+='libvorbis '
+	com+='-y '
+	com+=url_out
 	proceso = subprocess.Popen(com, shell=True, stdout=subprocess.PIPE,
 							   stderr=subprocess.STDOUT, universal_newlines=True)
 	for linea in proceso.stdout:
+		print(linea)
 		if not continuar:
 			proceso.kill()
 			reset_ui_info(barra_progresion, progresion_info, label_estado_descarga,
@@ -501,8 +502,6 @@ def obtiene_lista_videos(entry_url, label_estado_descarga):
 
 def gestion_de_bajada(convertir_opcion_seleccionada, entry_url, entry_destino,
 					  barra_progresion, progresion_info, label_estado_descarga, soloaudio=False, convertir=False):
-	#if not entry_url.get().startswith('https://www.youtube.com/watch?v='):
-	#	return None
 	lista_videos = obtiene_lista_videos(entry_url, label_estado_descarga)
 	if lista_videos is None:
 		return None
