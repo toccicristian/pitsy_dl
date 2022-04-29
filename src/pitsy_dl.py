@@ -218,8 +218,10 @@ def setup_inicial(v,label_info,barra_p):
 					return True
 				label_info.config(text='Instalando 7-Zip')
 				os.system('start /wait '+os.path.join(recursos_dir,' 7z.exe')+' /S')
-			if not (descarga_archivo(label_info,barra_p,url_ffmpeg_git_essentials,
-				os.path.join(recursos_dir,'ffmpeg_git_essentials.7z'),'encoder FFMPEG')):
+			ffmpeg_url=url_ffmpeg_git_essentials
+			if not (descarga_archivo(label_info,barra_p,ffmpeg_url,
+				os.path.join(recursos_dir,ffmpeg_url.split('/')[len(
+					ffmpeg_url.split('/'))-1]),'encoder FFMPEG')):
 				v.destroy()
 				return True
 			label_info.config(text='Extrayendo encoder...')
@@ -392,8 +394,8 @@ def convertir_medio(barra_progresion, progresion_info, label_estado_descarga, ur
 	continuar = True
 	duracion = ''
 	duracion = obtiene_duracion_medio(url_in)
-	url_in = '\"'+os.path.expanduser(os.path.normpath(url_in))+'\"'
-	url_out = '\"'+os.path.expanduser(os.path.normpath(url_out))+'\"'
+	url_in = '\''+url_in+'\''
+	url_out = '\''+url_out+'\''
 	com='ffmpeg -i '+url_in+' '
 	if url_out.rstrip('\"').endswith(('.mp3','.ogg')) or (soloaudio and url_out.endswith('.mp4')):
 		com+='-vn '
@@ -429,12 +431,14 @@ def bajar_video(video, formato, entry_destino, barra_progresion, progresion_info
 	continuar = True
 	chunksz = 1024*4
 	titulo_video=''
-	for caracter in video['title']:
-		if caracter in ['&','/','\\','-','=',' ','?']:
+	for caracter in r''+video['title']:
+		if caracter in ['/','\\','\'']:
 			caracter = '_'
 		titulo_video+=caracter
-	destino_url = os.path.join(entry_destino.get(), titulo_video+'-'
-							+ formato.get_formato().replace(' ', '-').replace('(', '-').rstrip(')')+'.'+formato.get_ext())
+	destino_url = os.path.normpath(os.path.join(
+		os.path.expanduser(os.path.normpath(entry_destino.get())), 
+			    os.path.expanduser(os.path.normpath(titulo_video)))+
+				'-'+ formato.get_formato().replace(' ', '-').replace('(', '-').rstrip(')')+'.'+formato.get_ext())
 	with open(destino_url, 'wb') as ar_destino:
 		agent = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.159 Safari/537.36',
 		'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8', 'Accept-Language': 'en-us,en;q=0.5', 'Sec-Fetch-Mode': 'navigate'}
