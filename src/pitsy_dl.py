@@ -610,7 +610,7 @@ def muestra_ventana():
 		ventana_principal_min_ancho-100), height='100')
 	label_url_bajar = tk.Label(marco_url_bajar, text='URL o TITULO (Aprox.):', width=23)
 	entry_url_bajar = tk.Entry(marco_url_bajar, width=str(
-		int(ventana_principal_min_ancho/9)))
+		int(ventana_principal_min_ancho/10)))
 	menu_rmb_entry_url_bajar = tk.Menu(entry_url_bajar, tearoff=0)
 
 	marco_boton_bajar = tk.Frame(marco_bajar, width='100', height='100')
@@ -640,7 +640,7 @@ def muestra_ventana():
 		ventana_principal_min_ancho-100), height='100')
 	label_destino_url = tk.Label(marco_destino_url, text='Destino:', width=9)
 	entry_destino_url = tk.Entry(marco_destino_url, width=str(
-		int(ventana_principal_min_ancho/9)))
+		int(ventana_principal_min_ancho/10)))
 	marco_destino_boton_examinar = tk.Frame(
 		marco_destino, width='100', height='100')
 	boton_examinar = tk.Button(marco_destino_boton_examinar, text='Examinar...')
