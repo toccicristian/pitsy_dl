@@ -266,10 +266,14 @@ def get_formatos(video):
 	formatos = list()
 	for f in video['formats']:
 		sz = 0
-		if 'filesize' in f.keys() and f['filesize'] is not None:
-			sz = int(f['filesize'])
-		formatos.append(FormatoVideo(tam=sz, ext=str(f['ext']), formato=str(
-			f['format']).split(' - ')[1], acodec=str(f['acodec']), url=str(f['url'])))
+		try:
+			if 'filesize' in f.keys() and f['filesize'] is not None:
+				sz = int(f['filesize'])
+			formatos.append(FormatoVideo(tam=sz, ext=str(f['ext']), formato=str(
+				f['format']).split(' - ')[1], acodec=str(f['acodec']), url=str(f['url'])))
+		except KeyError:
+			print(f"\rbuscando filesize para format_id:{f['format_id']}.", end='...')
+	print(f"Encontrado: {sz} bytes")
 	return formatos
 
 
