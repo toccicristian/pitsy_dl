@@ -27,4 +27,6 @@ cambios de la versión 0.0.1-alpha.6:
 	***BUGS CONOCIDOS Y FIX: En WINDOWS la version '.pyw' O '--noconsole' no convierte los archivos. 
 				Fix: compilar a partir del '.py' y evitar '--noconsole' al hacerlo.
 
+cambios de la versión 0.0.1-alpha.7
+    -actualizado requirements
 	
